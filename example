@@ -1,0 +1,75 @@
+to Pass in data to AsyncTask, you can use this :
+
+Class BackgroundTask implements AsyncTask<String,Void,String>{
+  String data;
+  BackgroundTask(String data){
+    this.data = data;
+  }
+  @Override
+  protected String doInBackground(String... params) {
+     return null;
+  }
+}
+
+so you can get the value of "data" in BackgroundTask, but if you have the object that changed while in background you can use this(ex: Marker):
+Class BackgroundTask implements AsyncTask<String,Void,String>{
+  Marker marker;
+  BackgroundTask(Marker marker){
+    this.marker = marker;
+  }
+  
+  @Override
+  protected String doInBackground(String... params) {
+    marker(new Position(Double.valueOf(params[0]),Double.valueOf(params[1]))) //it's just example :)
+    return params[3];
+  }
+  
+  Void PostBackground(String s){
+    marker.setTitle(s);
+  }
+}
+
+
+But if you want to pass out data of AsyncTask, you can use Interface in PostBackground
+you need to make this first:
+
+public interface Result {
+    String Output(String output);
+}
+
+in class that need output can implements Results.
+
+public class MainActivity extends AppCompatActivity implements Result{
+String dataNested;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+    }
+
+    @Override
+    public String Output(String output) {
+        dataNested = output;
+        return null;
+    }
+}
+
+in BackgroundTask:
+public class BackgroundTask extends AsyncTask<String, Void, String> {
+    @Override
+    protected String doInBackground(String... params) {
+        return null;
+    }
+    Result delegate = null;
+    @Override
+    protected void onPostExecute(String s) {
+        super.onPostExecute(s);
+        delegate.Output(s);
+    }
+}
+
+
+if you need more information, you can searching about "Nested AsyncTask"
+
+Thank You...
+
